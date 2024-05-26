@@ -17,7 +17,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware("auth");
     }
 
     /**
@@ -26,33 +26,38 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
-    {   
-        $productData = DB::table('products')->get();
-        return View::make("home", compact('productData'));
+    {
+        $productData = DB::table("products")->get();
+        return View::make("home", compact("productData"));
     }
 
     public function initiatpayment(Request $request)
-    {  
+    {
         $price = Crypt::decryptString($request->price);
-        $intent = auth()->user()->createSetupIntent();
-        return View::make("home", compact('price',"intent"));
+        $intent = auth()
+            ->user()
+            ->createSetupIntent();
+        return View::make("home", compact("price", "intent"));
     }
 
-    public function processPayment(Request $request){
+    public function processPayment(Request $request)
+    {
         $user = auth()->user();
-        $price = Crypt::decryptString($request->input('price'));
-        $paymentMethod = $request->input('payment_method');
+        $price = Crypt::decryptString($request->input("price"));
+        $paymentMethod = $request->input("payment_method");
         $user->createOrGetStripeCustomer();
         $user->addPaymentMethod($paymentMethod);
-        try
-        {
-        $user->charge($price * 100, $paymentMethod,['off_session' => true, 'description' => 'purchase']);
+        try {
+            $user->charge($price * 100, $paymentMethod, [
+                "off_session" => true,
+                "description" => "purchase",
+            ]);
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                "message" => "Error creating subscription. " . $e->getMessage(),
+            ]);
         }
-        catch (\Exception $e)
-        { 
-        return back()->withErrors(['message' => 'Error creating subscription. ' . $e->getMessage()]);
-        }
-        session()->put('success', 'successfully purchased');
-        return redirect('home');
+        session()->put("success", "successfully purchased");
+        return redirect("home");
     }
 }

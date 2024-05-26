@@ -24,9 +24,9 @@
                                                 {{ session('success') }}
                                             </div>
                                         @endif
-                                        <?php
-                                          echo session()->forget('success');
-                                        ?>
+                                        <?php echo session()->forget(
+                                            "success"
+                                        ); ?>
                                         <div class="card-body" id="members">
                                         <table id="exportdata" class="display" style="width:100%">
                                 <thead>
@@ -39,7 +39,7 @@
                                 </thead>
                             
                                 <tbody>
-                                <?php $i=1;?>
+                                <?php $i = 1; ?>
                                 @foreach($productData as $product)
                             
                                     <tr>
@@ -48,7 +48,7 @@
                                         <td>{{$product->price}}</td>
                                         <td><a href="{{route('initiatpayment', ['price' => Crypt::encryptString($product->price)])}}">Buy</a></td>
                                         
-                                    </tr> <?php $i++;?>
+                                    </tr> <?php $i++; ?>
                                     @endforeach
                                 </tbody>
                             
