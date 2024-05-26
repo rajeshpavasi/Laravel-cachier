@@ -24,6 +24,9 @@
                                                 {{ session('success') }}
                                             </div>
                                         @endif
+                                        <?php
+                                          echo session()->forget('success');
+                                        ?>
                                         <div class="card-body" id="members">
                                         <table id="exportdata" class="display" style="width:100%">
                                 <thead>
